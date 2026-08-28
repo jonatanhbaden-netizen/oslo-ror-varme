@@ -1,16 +1,56 @@
-# React + Vite
+# Pling owner app (Oslo Rør & Varme)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repo is the **source of truth** for iterating on the Pling owner dashboard with Cursor.
 
-Currently, two official plugins are available:
+Pling is a voice-agent receptionist for Norwegian trades. The owner opens this phone app after Pling answers: today's calls, unhandled messages, and upcoming jobs. The demo tenant is **Oslo Rør & Varme** (white-label per company). UI copy is Norwegian.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+There is **no live Pling API yet**. The app is fully usable on mock data.
 
-## React Compiler
+## Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Vite + React + TypeScript. The Vercel project `oslo-ror-varme` (team `baden-ai`) already deploys this Vite app — keep using that project.
 
-## Expanding the ESLint configuration
+```bash
+npm install
+npm run dev
+npm run typecheck
+npm run build
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Open `http://localhost:5173`. The layout is mobile-first (max 430px, centered on desktop).
+
+## Mock data and the later API
+
+| Piece | Where |
+| --- | --- |
+| Types (`Call`, `Message`, `Job`, `TodayStats`, `Tenant`, `Priority`) | `src/types.ts` |
+| Demo seed (screenshot-faithful records + extra rows, Oslo addresses) | `src/data/mock.ts` |
+| Client: mock unless `VITE_PLING_API_URL` is set | `src/api/client.ts` |
+| Handled state + tenant edits | `localStorage` key `pling.owner-app.v1` via `src/lib/storage.ts` |
+
+When a real API exists, set:
+
+```bash
+VITE_PLING_API_URL=https://api.pling.example
+```
+
+The HTTP client expects:
+
+- `GET /v1/dashboard` → `{ tenant, calls, messages, jobs, stats? }`
+- `POST /v1/calls/:id/handled`
+- `POST /v1/messages/:id/handled`
+- `PATCH /v1/tenant`
+
+Until then, leave the env unset. Do not pretend the live API exists.
+
+Reset demo data from **Innstillinger → Nullstill demo**.
+
+## Routes
+
+- `/` I dag (filters: `?filter=needs_action` / `urgent`)
+- `/beskjeder` and `/beskjeder/:id`
+- `/oppdrag` and `/oppdrag/:id`
+- `/samtaler/:id`
+- `/innstillinger`
+
+Actions: **Ring** (`tel:`), **SMS** (`sms:`), **Vis vei** (Google Maps URL), **Merk som behandlet** (persisted; item leaves the unhandled list).
