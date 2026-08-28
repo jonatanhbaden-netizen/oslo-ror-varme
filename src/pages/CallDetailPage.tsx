@@ -32,7 +32,9 @@ export function CallDetailPage() {
           <p className="stat-label">Varighet</p>
           <p className="detail-stat">{formatDuration(call.durationSec)}</p>
         </section>
-        <section className={`card ${call.outcome === 'booked' ? 'card-lime' : 'card-lavender'} stat-card`}>
+        <section
+          className={`card ${call.outcome === 'booked' ? 'card-lime' : call.urgent ? 'card-black' : 'card-lavender'} stat-card`}
+        >
           <p className="stat-label">Utfall</p>
           <p className="detail-stat">{call.urgent ? 'Akutt' : outcomeLabel(call.outcome)}</p>
         </section>

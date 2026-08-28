@@ -363,13 +363,6 @@ button {
   gap: 10px;
 }
 
-.text-link {
-  font-weight: 700;
-  min-height: 32px;
-  display: inline-flex;
-  align-items: center;
-}
-
 .chip {
   display: inline-flex;
   align-items: center;
@@ -472,7 +465,24 @@ button {
 }
 
 .action-btn {
-  background: rgba(18, 18, 20, 0.06);
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 0 6px 16px rgba(18, 18, 20, 0.08);
+}
+
+.card-white .action-btn,
+.card-lime .action-btn,
+.card-lavender .action-btn {
+  background: rgba(18, 18, 20, 0.08);
+  box-shadow: none;
+}
+
+.text-link {
+  font-weight: 700;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--ink);
 }
 
 .primary-btn {
