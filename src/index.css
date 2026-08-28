@@ -740,6 +740,7 @@ button {
   width: min(100%, 400px);
   min-height: 640px;
   background: var(--bg);
+  border: 3px solid var(--black);
   border-radius: 40px;
   box-shadow: var(--shadow);
   padding: 16px 14px 18px;
