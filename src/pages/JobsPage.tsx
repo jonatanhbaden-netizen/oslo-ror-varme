@@ -1,10 +1,8 @@
-import { Link } from 'react-router-dom'
-import { ActionRow } from '../components/ActionRow'
+import { JobCard } from '../components/Cards'
 import { EmptyState } from '../components/EmptyState'
 import { ScreenHeader } from '../components/ScreenHeader'
-import { formatDateTime, formatRelativeUntil, jobStatusLabel } from '../lib/format'
+import { formatRelativeUntil } from '../lib/format'
 import { usePling } from '../store/PlingProvider'
-import type { Job } from '../types'
 
 export function JobsPage() {
   const { tenant, jobs, demoDismissed, dismissDemo } = usePling()
@@ -26,7 +24,7 @@ export function JobsPage() {
         <section className="card card-black featured-job">
           <p className="eyebrow">Neste oppdrag · {formatRelativeUntil(next.startsAt)}</p>
           <div className="card card-lime nested-card">
-            <JobBody job={next} featured />
+            <JobCard job={next} featured detailTo={`/oppdrag/${next.id}`} />
           </div>
         </section>
       ) : (
@@ -39,37 +37,12 @@ export function JobsPage() {
           <div className="stack">
             {rest.map((job) => (
               <article key={job.id} className="card card-white list-card">
-                <JobBody job={job} />
+                <JobCard job={job} detailTo={`/oppdrag/${job.id}`} />
               </article>
             ))}
           </div>
         </>
       ) : null}
     </div>
-  )
-}
-
-function JobBody({ job, featured = false }: { job: Job; featured?: boolean }) {
-  return (
-    <>
-      <div className="list-card-head">
-        <div>
-          <p className="meta">{formatDateTime(job.startsAt)}</p>
-          <h2>{job.customerName}</h2>
-          <p className="meta">{job.address}</p>
-        </div>
-        <span className={`chip${job.status === 'confirmed' ? ' chip-ok' : ''}`}>
-          {jobStatusLabel(job.status)}
-        </span>
-      </div>
-      <p className="body-copy">{featured ? job.notes : job.title}</p>
-      {featured ? <p className="summary">{job.title}</p> : null}
-      <div className="list-card-foot">
-        <Link className="text-link" to={`/oppdrag/${job.id}`}>
-          Vis detaljer
-        </Link>
-        <ActionRow phone={job.phone} address={job.address} />
-      </div>
-    </>
   )
 }

@@ -1,26 +1,15 @@
 import { Link, useSearchParams } from 'react-router-dom'
+import { CallCard } from '../components/Cards'
 import { EmptyState } from '../components/EmptyState'
 import { FilterPills } from '../components/FilterPills'
 import { IconArrowUpRight } from '../components/Icons'
 import { ScreenHeader } from '../components/ScreenHeader'
-import {
-  displayName,
-  formatClock,
-  formatDuration,
-  outcomeLabel,
-} from '../lib/format'
+import { formatDuration } from '../lib/format'
 import { filterCalls, type TodayFilter } from '../lib/stats'
 import { usePling } from '../store/PlingProvider'
-import type { Call } from '../types'
 
 function isTodayFilter(value: string | null): value is TodayFilter {
   return value === 'all' || value === 'needs_action' || value === 'urgent'
-}
-
-function callTone(call: Call): 'lime' | 'lavender' | 'white' {
-  if (call.outcome === 'booked') return 'lime'
-  if (call.outcome === 'needs_action' && !call.handledAt) return 'lavender'
-  return 'white'
 }
 
 export function TodayPage() {
@@ -96,38 +85,10 @@ export function TodayPage() {
       ) : (
         <div className="stack">
           {visible.map((call) => (
-            <CallCard key={call.id} call={call} />
+            <CallCard key={call.id} call={call} detailTo={`/samtaler/${call.id}`} />
           ))}
         </div>
       )}
     </div>
-  )
-}
-
-function CallCard({ call }: { call: Call }) {
-  const tone = callTone(call)
-  return (
-    <article className={`card card-${tone} list-card`}>
-      <div className="list-card-head">
-        <div>
-          <h2>{displayName(call.callerName)}</h2>
-          <p className="meta">
-            {call.phone} · {formatClock(call.startedAt)}
-          </p>
-        </div>
-        <span className={`chip${call.urgent ? ' chip-critical' : ''}`}>
-          {call.urgent ? 'Akutt' : outcomeLabel(call.outcome)}
-        </span>
-      </div>
-      <p className="summary">
-        {call.topic} · {formatDuration(call.durationSec)}
-      </p>
-      <p className="body-copy">{call.summary}</p>
-      <div className="list-card-foot">
-        <Link className="text-link" to={`/samtaler/${call.id}`}>
-          Vis detaljer
-        </Link>
-      </div>
-    </article>
   )
 }

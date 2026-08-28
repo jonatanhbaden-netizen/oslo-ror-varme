@@ -16,6 +16,12 @@ export function isUnhandledCall(call: Call): boolean {
   return call.outcome === 'needs_action' && !call.handledAt
 }
 
+export function callTone(call: Call): 'lime' | 'lavender' | 'white' {
+  if (call.outcome === 'booked') return 'lime'
+  if (isUnhandledCall(call)) return 'lavender'
+  return 'white'
+}
+
 export type TodayFilter = 'all' | 'needs_action' | 'urgent'
 
 export function filterCalls(calls: Call[], filter: TodayFilter): Call[] {

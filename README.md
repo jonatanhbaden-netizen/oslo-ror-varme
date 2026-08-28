@@ -1,14 +1,12 @@
-# Pling owner app (Oslo Rør & Varme)
+# Pling (Oslo Rør & Varme)
 
-This repo is the **source of truth** for iterating on the Pling owner dashboard with Cursor.
+This repo is the **source of truth** for iterating on Pling with Cursor: the owner dashboard and the public marketing site. Both deploy on the existing Vercel project `oslo-ror-varme` (team `baden-ai`).
 
-Pling is a voice-agent receptionist for Norwegian trades. The owner opens this phone app after Pling answers: today's calls, unhandled messages, and upcoming jobs. The demo tenant is **Oslo Rør & Varme** (white-label per company). UI copy is Norwegian.
+Pling is a voice-agent receptionist for Norwegian trades. Unrelated to pling.care. UI copy is Norwegian.
 
-There is **no live Pling API yet**. The app is fully usable on mock data.
+There is **no live Pling API yet**. The owner app is fully usable on mock data.
 
-## Stack
-
-Vite + React + TypeScript. The Vercel project `oslo-ror-varme` (team `baden-ai`) already deploys this Vite app — keep using that project.
+## Run
 
 ```bash
 npm install
@@ -17,40 +15,36 @@ npm run typecheck
 npm run build
 ```
 
-Open `http://localhost:5173`. The layout is mobile-first (max 430px, centered on desktop).
+- Owner app: `http://localhost:5173/` (phone shell, max 430px)
+- Marketing: `http://localhost:5173/site`
 
-## Mock data and the later API
+## Owner dashboard
+
+Demo tenant: **Oslo Rør & Varme** (white-label per company).
 
 | Piece | Where |
 | --- | --- |
 | Types (`Call`, `Message`, `Job`, `TodayStats`, `Tenant`, `Priority`) | `src/types.ts` |
-| Demo seed (screenshot-faithful records + extra rows, Oslo addresses) | `src/data/mock.ts` |
+| Demo seed | `src/data/mock.ts` |
 | Client: mock unless `VITE_PLING_API_URL` is set | `src/api/client.ts` |
-| Handled state + tenant edits | `localStorage` key `pling.owner-app.v1` via `src/lib/storage.ts` |
+| Handled state + tenant edits | `localStorage` key `pling.owner-app.v1` |
 
-When a real API exists, set:
+When a real API exists, set `VITE_PLING_API_URL`. Expected shape is documented in `src/api/client.ts`. Do not pretend the live API exists. Reset demo data from **Innstillinger → Nullstill demo**.
 
-```bash
-VITE_PLING_API_URL=https://api.pling.example
-```
+Routes: `/`, `/beskjeder`, `/oppdrag`, `/samtaler/:id`, `/innstillinger`.
 
-The HTTP client expects:
+## Marketing site (`/site`)
 
-- `GET /v1/dashboard` → `{ tenant, calls, messages, jobs, stats? }`
-- `POST /v1/calls/:id/handled`
-- `POST /v1/messages/:id/handled`
-- `PATCH /v1/tenant`
+Public site you send a rørlegger or elektriker to. Same bento system. Interactive demo on the home page (real dashboard cards, not screenshots). Names like Bergen Rør AS are labeled as example data.
 
-Until then, leave the env unset. Do not pretend the live API exists.
+- `/site` home + live demo
+- `/site/slik-fungerer-det`
+- `/site/for-rorleggere`
+- `/site/for-elektrikere`
+- `/site/kontakt`
 
-Reset demo data from **Innstillinger → Nullstill demo**.
+Contact form `POST /api/contact` is a real handler (`api/contact.js` on Vercel, Vite middleware in `vite.config.ts`). Submissions append JSON lines to `data/leads.jsonl` locally, or `/tmp/pling-leads.jsonl` on Vercel (ephemeral on serverless until a database is added). Failed saves return an error — the form does not swallow submits.
 
-## Routes
+## Stack
 
-- `/` I dag (filters: `?filter=needs_action` / `urgent`)
-- `/beskjeder` and `/beskjeder/:id`
-- `/oppdrag` and `/oppdrag/:id`
-- `/samtaler/:id`
-- `/innstillinger`
-
-Actions: **Ring** (`tel:`), **SMS** (`sms:`), **Vis vei** (Google Maps URL), **Merk som behandlet** (persisted; item leaves the unhandled list).
+Vite + React + TypeScript. Keep the existing Vercel project; do not create a new one.

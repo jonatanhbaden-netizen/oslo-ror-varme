@@ -1,16 +1,7 @@
-import { Link } from 'react-router-dom'
-import { ActionRow } from '../components/ActionRow'
+import { MessageCard } from '../components/Cards'
 import { EmptyState } from '../components/EmptyState'
 import { ScreenHeader } from '../components/ScreenHeader'
-import { displayName, formatDateTime, priorityLabel } from '../lib/format'
 import { usePling } from '../store/PlingProvider'
-import type { Message, Priority } from '../types'
-
-function chipClass(priority: Priority): string {
-  if (priority === 'critical') return 'chip chip-critical'
-  if (priority === 'urgent') return 'chip chip-urgent'
-  return 'chip'
-}
 
 export function MessagesPage() {
   const { tenant, unhandledMessages, messages, demoDismissed, dismissDemo } = usePling()
@@ -42,34 +33,14 @@ export function MessagesPage() {
       ) : (
         <div className="stack">
           {unhandledMessages.map((message) => (
-            <MessageCard key={message.id} message={message} />
+            <MessageCard
+              key={message.id}
+              message={message}
+              detailTo={`/beskjeder/${message.id}`}
+            />
           ))}
         </div>
       )}
     </div>
-  )
-}
-
-function MessageCard({ message }: { message: Message }) {
-  return (
-    <article className="card card-white list-card message-card">
-      {message.priority === 'critical' ? <span className="critical-pip" aria-hidden="true" /> : null}
-      <div className="list-card-head">
-        <div>
-          <h2>{displayName(message.senderName)}</h2>
-          <p className="meta">
-            {message.phone} · {formatDateTime(message.sentAt)}
-          </p>
-        </div>
-        <span className={chipClass(message.priority)}>{priorityLabel(message.priority)}</span>
-      </div>
-      <p className="body-copy">{message.text}</p>
-      <div className="list-card-foot">
-        <Link className="text-link" to={`/beskjeder/${message.id}`}>
-          Vis detaljer
-        </Link>
-        <ActionRow phone={message.phone} address={message.address} />
-      </div>
-    </article>
   )
 }
